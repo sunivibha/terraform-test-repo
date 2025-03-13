@@ -41,17 +41,17 @@ resource "local_file" "email_json" {
   filename = "email.json"
   content  = <<EOT
 {
-  "Source": "var.source_mail",
+  "Source": var.source_mail,
   "Destination": {
-    "ToAddresses": "var.requestermail_id"
+    "ToAddresses": [var.requestermail_id]
   },
   "Message": {
     "Subject": {
-      "Data": "IAM Credentials for Request "${request_id}""
+      "Data": "IAM Credentials for Request ${request_id}"
     },
     "Body": {
       "Text": {
-        "Data": "Requester: "${Requester Email}"\nRequest ID: "${request_id}"\nIAM User ARN: ${aws_iam_user.user.arn}\nAccess Key: ${aws_iam_access_key.user_key.id}\nSecret Key: ${aws_iam_access_key.user_key.secret}"
+        "Data": "Requester: "${var.requestermail_id}"\nRequest ID: "${request_id}"\nIAM User ARN: ${aws_iam_user.user.arn}\nAccess Key: ${aws_iam_access_key.user_key.id}\nSecret Key: ${aws_iam_access_key.user_key.secret}"
       }
     }
   }
