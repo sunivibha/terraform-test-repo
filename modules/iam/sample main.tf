@@ -1,22 +1,27 @@
 # ✅ cloud provider
 provider "aws" {
-  region = "var.region"
+  region = "us-east-1"
+}
+
+# ✅ Verify Email in AWS SES
+resource "aws_ses_email_identity" "email" {
+  email = "harishh1265@gmail.com"
 }
 
 
 # ✅ Create IAM User
 resource "aws_iam_user" "user" {
-  name = "var.user_name"
+  name = "servicenow-user"
   tags = {
-    request_id = "var.request_id"
-    requester  = "var.requestermail_id"
+    request_id = "SNOW12345"
+    requester  = "harishh1265@gmail.com"
   }
 }
 
 # ✅ Attach Correct S3 Read-Only Policy
 resource "aws_iam_user_policy_attachment" "s3_read_access" {
   user       = aws_iam_user.user.name
-  policy_arn = "var.policy_arn"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 
   depends_on = [aws_iam_user.user]
 }
@@ -31,8 +36,8 @@ resource "local_file" "creds" {
   filename = "creds.json"
   content  = <<EOT
 {
-  "Requester Email": "var.requestermail_id",
-  "Request ID": "var.request_id",
+  "Requester Email": "harishh1265@gmail.com",
+  "Request ID": "SNOW12345",
   "IAM User ARN": "${aws_iam_user.user.arn}",
   "Access Key": "${aws_iam_access_key.user_key.id}",
   "Secret Key": "${aws_iam_access_key.user_key.secret}"
@@ -46,17 +51,17 @@ resource "local_file" "email_json" {
   filename = "email.json"
   content  = <<EOT
 {
-  "Source": "var.source_mail",
+  "Source": "harishh1265@gmail.com",
   "Destination": {
-    "ToAddresses": "${Requester Email}"
+    "ToAddresses": ["harishh1265@gmail.com"]
   },
   "Message": {
     "Subject": {
-      "Data": "IAM Credentials for Request "${request_id}""
+      "Data": "IAM Credentials for Request SNOW12345"
     },
     "Body": {
       "Text": {
-        "Data": "Requester: "${Requester Email}"\nRequest ID: "${request_id}"\nIAM User ARN: ${aws_iam_user.user.arn}\nAccess Key: ${aws_iam_access_key.user_key.id}\nSecret Key: ${aws_iam_access_key.user_key.secret}"
+        "Data": "Requester: harishh1265@gmail.com\nRequest ID: SNOW12345\nIAM User ARN: ${aws_iam_user.user.arn}\nAccess Key: ${aws_iam_access_key.user_key.id}\nSecret Key: ${aws_iam_access_key.user_key.secret}"
       }
     }
   }
@@ -72,5 +77,6 @@ resource "null_resource" "send_email" {
   depends_on = [
     local_file.email_json,    
     aws_iam_access_key.user_key,
+    aws_ses_email_identity.email
   ]
 }
