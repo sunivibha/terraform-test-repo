@@ -1,8 +1,3 @@
-# ✅ cloud provider
-provider "aws" {
-  region = "var.region"
-}
-
 
 # ✅ Create IAM User
 resource "aws_iam_user" "user" {
@@ -48,7 +43,7 @@ resource "local_file" "email_json" {
 {
   "Source": "var.source_mail",
   "Destination": {
-    "ToAddresses": "${Requester Email}"
+    "ToAddresses": "var.requestermail_id"
   },
   "Message": {
     "Subject": {
