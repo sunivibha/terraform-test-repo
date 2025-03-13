@@ -4,10 +4,11 @@ provider "aws" {
 }
 
 
-
-# ✅ Create IAM User
+# ✅ Create Iam user 
 resource "aws_iam_user" "user" {
   name = "servicenow-user"
   tags = {
     request_id = "SNOW12345"
-    requester  = "sunilkm88@gmail.com"
+    requester  = "sunilkm88@gmail.com" 
+  }
+}
